@@ -14,9 +14,6 @@
 
     <!-- ===================================================================== -->
     <!-- CONFIGURACIÓN FIJA PARA DESPLIEGUE EN VERCEL (PEGAR UNA SOLA VEZ)     -->
-    <!-- Instrucciones: Antes de subir este archivo como index.html a Vercel,  -->
-    <!-- reemplaza los valores dentro de firebaseConfig con los de tu proyecto -->
-    <!-- para que todos los teléfonos y PCs se conecten automáticamente.       -->
     <!-- ===================================================================== -->
     <script>
         window.PLANTACONTROL_VERCEL_CONFIG = {
@@ -129,10 +126,10 @@
                         <label for="login-pin-input" class="text-xs font-extrabold uppercase tracking-wider text-[#00f5d4]">
                             Clave de Acceso (PIN)
                         </label>
-                        <button type="button" id="toggle-demo-pins" data-action="toggle-demo-box"
+                        <!-- <button type="button" id="toggle-demo-pins" data-action="toggle-demo-box"
                             class="text-xs font-bold text-[#ffbe0b] hover:underline">
                             Ver Claves Demo
-                        </button>
+                        </button> -->
                     </div>
                     <input type="password" id="login-pin-input" required placeholder="INGRESE SU CLAVE..."
                         class="auto-uppercase w-full p-3.5 bg-[#050811] border border-slate-700 focus:border-[#00f5d4] rounded-2xl text-sm font-bold tracking-widest text-white outline-none transition">
@@ -550,7 +547,7 @@
                                 <h2 class="text-lg sm:text-xl font-black text-white">Historial y Auditoría</h2>
                                 <span id="history-count-badge" class="px-2.5 py-0.5 rounded-full text-xs font-black bg-[#ffbe0b]/15 text-[#ffbe0b] border border-[#ffbe0b]/30">0</span>
                             </div>
-                            <p class="text-xs text-slate-400 mt-0.5">Trazabilidad por fecha, rol responsable, vendedor y cliente.</p>
+                            <p class="text-xs text-slate-400 mt-0.5">Trazabilidad por fecha, hora exacta, rol responsable, vendedor y cliente.</p>
                         </div>
 
                         <button type="button" data-action="export-csv"
@@ -564,7 +561,7 @@
                         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                             <div class="relative flex-1">
                                 <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-[#00f5d4] text-xs"></i>
-                                <input type="text" id="history-search-input" placeholder="BUSCAR POR PRODUCTO, RESPONSABLE, CLIENTE O NOTA..."
+                                <input type="text" id="history-search-input" placeholder="BUSCAR POR PRODUCTO, RESPONSABLE, CLIENTE, HORA O NOTA..."
                                     class="auto-uppercase w-full pl-9 pr-8 py-2.5 bg-[#050811] border border-slate-700 focus:border-[#00f5d4] rounded-xl text-xs font-bold text-white outline-none">
                                 <button type="button" id="history-search-clear" data-action="clear-history-search"
                                     class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#ff007f] text-xs">
@@ -764,10 +761,10 @@
                 <input type="hidden" id="mov-selected-client-id">
                 <input type="hidden" id="mov-selected-product-id">
 
-                <!-- FECHA DEL MOVIMIENTO -->
+                <!-- FECHA DEL MOVIMIENTO (LA HORA EXACTA SE REGISTRA AUTOMÁTICAMENTE) -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label for="mov-date-input" class="block text-xs font-extrabold uppercase text-slate-400 mb-1">Fecha del Movimiento *</label>
+                        <label for="mov-date-input" class="block text-xs font-extrabold uppercase text-slate-400 mb-1">Fecha (Hora Auto) *</label>
                         <input type="date" id="mov-date-input" required
                             class="w-full p-3 bg-[#050811] border border-slate-700 focus:border-[#00f5d4] rounded-xl text-xs font-bold text-white outline-none">
                     </div>
@@ -936,7 +933,7 @@
                         <div id="prod-unit-dropdown" class="hidden absolute left-0 right-0 mt-1 bg-[#050811] border border-[#c084fc]/60 rounded-xl shadow-2xl max-h-40 overflow-y-auto z-30 divide-y divide-slate-800"></div>
                     </div>
                     <div>
-                        <label for="prod-stock" class="block text-xs font-extrabold uppercase text-slate-400 mb-1">Stock Inicial *</label>
+                        <label id="prod-stock-label" for="prod-stock" class="block text-xs font-extrabold uppercase text-slate-400 mb-1">Stock *</label>
                         <input type="number" id="prod-stock" required min="0" value="0"
                             class="w-full p-3 bg-[#050811] border border-slate-700 focus:border-[#00f5d4] rounded-xl text-xs font-black text-white outline-none">
                     </div>
@@ -951,6 +948,10 @@
                             class="w-full p-3 bg-[#050811] border border-slate-700 focus:border-[#00f5d4] rounded-xl text-xs font-black text-[#ffbe0b] outline-none">
                     </div>
                 </div>
+
+                <p id="prod-stock-lock-note" class="hidden text-[11px] font-bold text-[#ffbe0b] bg-[#ffbe0b]/10 border border-[#ffbe0b]/30 rounded-xl p-2.5">
+                    <i class="fa-solid fa-lock mr-1"></i> Rol Producción: El stock no se edita aquí. Para sumar existencias utilice el botón <strong>Ingreso Planta</strong>.
+                </p>
 
                 <button type="submit" class="w-full py-3.5 rounded-2xl neon-btn-cyan font-black text-xs uppercase tracking-wider">
                     Guardar Producto
@@ -1028,7 +1029,7 @@
     </div>
 
     <!-- ===================================================================== -->
-    <!-- MODAL 4: CONFIRMACIÓN SEGURA (SIN alert() NI confirm())               -->
+    <!-- MODAL 4: CONFIRMACIÓN SEGURA                                          -->
     <!-- ===================================================================== -->
     <div id="modal-confirm" class="hidden fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="w-full max-w-sm bg-[#0b1120] border border-[#ff007f]/50 rounded-3xl p-5 space-y-4 shadow-2xl">
@@ -1280,19 +1281,35 @@
                 movements: []
             };
 
+            function pad2(n) {
+                return String(n).padStart(2, '0');
+            }
+
             function getTodayISO() {
                 const now = new Date();
-                const offset = now.getTimezoneOffset();
-                const local = new Date(now.getTime() - offset * 60000);
-                return local.toISOString().slice(0, 10);
+                return `${now.getFullYear()}-${pad2(now.getMonth() + 1)}-${pad2(now.getDate())}`;
+            }
+
+            function getNowTimeStr() {
+                const now = new Date();
+                return `${pad2(now.getHours())}:${pad2(now.getMinutes())}:${pad2(now.getSeconds())}`;
+            }
+
+            function getNowDateTimeISO(customDateOnly = null) {
+                const datePart = (customDateOnly && /^\d{4}-\d{2}-\d{2}$/.test(customDateOnly))
+                    ? customDateOnly
+                    : getTodayISO();
+                return `${datePart} ${getNowTimeStr()}`;
             }
 
             function getDaysAgoISO(days) {
                 const now = new Date();
                 now.setDate(now.getDate() - days);
-                const offset = now.getTimezoneOffset();
-                const local = new Date(now.getTime() - offset * 60000);
-                return local.toISOString().slice(0, 10);
+                return `${now.getFullYear()}-${pad2(now.getMonth() + 1)}-${pad2(now.getDate())}`;
+            }
+
+            function isProductionRole(user) {
+                return Boolean(user && toUpperClean(user.role).includes('PRODUCCI'));
             }
 
             function toUpperClean(val) {
@@ -1375,10 +1392,10 @@
                         { id: 'prod-5', sku: 'MAL-008', name: 'MALLA ELECTROSOLDADA 6X6', category: 'ACERO', unit: 'ROLLO', stock: 0, minStock: 15, price: 68.00 }
                     ],
                     movements: [
-                        { id: 'mov-1', date: getDaysAgoISO(2), type: 'INGRESO', productId: 'prod-1', productName: 'CEMENTO GRIS PORTLAND 42.5KG', qty: 300, unitPrice: 0, totalAmount: 0, role: 'PRODUCCION', userName: 'JEFE DE PRODUCCIÓN', clientId: '', clientName: '', note: 'LOTE PRODUCCIÓN #A102' },
-                        { id: 'mov-2', date: getDaysAgoISO(1), type: 'VENTA', productId: 'prod-1', productName: 'CEMENTO GRIS PORTLAND 42.5KG', qty: 80, unitPrice: 9.50, totalAmount: 760.00, role: 'VENTAS', userName: 'CARLOS MENDOZA', clientId: 'cli-1', clientName: 'FERRETERÍA INDUSTRIAL EL SOL', note: 'ORDEN #401' },
-                        { id: 'mov-3', date: getTodayISO(), type: 'INGRESO', productId: 'prod-2', productName: 'BLOQUE DE CONCRETO 15CM', qty: 900, unitPrice: 0, totalAmount: 0, role: 'GERENCIA', userName: 'GERENCIA GENERAL', clientId: '', clientName: '', note: 'REPOSICIÓN PLANTA NORTE' },
-                        { id: 'mov-4', date: getTodayISO(), type: 'VENTA', productId: 'prod-3', productName: 'PEGO BLANCO CERÁMICO 20KG', qty: 35, unitPrice: 6.20, totalAmount: 217.00, role: 'VENTAS', userName: 'ANA SOFÍA ROJAS', clientId: 'cli-2', clientName: 'CONSTRUCTORA HORIZONTE C.A.', note: 'DESPACHO OBRA SUR' }
+                        { id: 'mov-1', date: `${getDaysAgoISO(2)} 08:15:00`, type: 'INGRESO', productId: 'prod-1', productName: 'CEMENTO GRIS PORTLAND 42.5KG', qty: 300, unitPrice: 0, totalAmount: 0, role: 'PRODUCCION', userName: 'JEFE DE PRODUCCIÓN', clientId: '', clientName: '', note: 'LOTE PRODUCCIÓN #A102' },
+                        { id: 'mov-2', date: `${getDaysAgoISO(1)} 14:30:00`, type: 'VENTA', productId: 'prod-1', productName: 'CEMENTO GRIS PORTLAND 42.5KG', qty: 80, unitPrice: 9.50, totalAmount: 760.00, role: 'VENTAS', userName: 'CARLOS MENDOZA', clientId: 'cli-1', clientName: 'FERRETERÍA INDUSTRIAL EL SOL', note: 'ORDEN #401' },
+                        { id: 'mov-3', date: `${getTodayISO()} 09:05:00`, type: 'INGRESO', productId: 'prod-2', productName: 'BLOQUE DE CONCRETO 15CM', qty: 900, unitPrice: 0, totalAmount: 0, role: 'GERENCIA', userName: 'GERENCIA GENERAL', clientId: '', clientName: '', note: 'REPOSICIÓN PLANTA NORTE' },
+                        { id: 'mov-4', date: `${getTodayISO()} 10:40:00`, type: 'VENTA', productId: 'prod-3', productName: 'PEGO BLANCO CERÁMICO 20KG', qty: 35, unitPrice: 6.20, totalAmount: 217.00, role: 'VENTAS', userName: 'ANA SOFÍA ROJAS', clientId: 'cli-2', clientName: 'CONSTRUCTORA HORIZONTE C.A.', note: 'DESPACHO OBRA SUR' }
                     ],
                     backupConfig: {
                         intervalHours: 24,
@@ -1498,7 +1515,6 @@
                         const nextList = nextState[colName] || [];
                         const nextMap = new Map(nextList.map(it => [it.id, it]));
 
-                        // Altas y modificaciones
                         nextList.forEach(item => {
                             const prevItem = prevList.find(p => p.id === item.id);
                             if (!prevItem || JSON.stringify(prevItem) !== JSON.stringify(item)) {
@@ -1507,7 +1523,6 @@
                             }
                         });
 
-                        // Eliminaciones
                         prevList.forEach(prevItem => {
                             if (!nextMap.has(prevItem.id)) {
                                 batch.delete(getCloudDocRef(colName, prevItem.id));
@@ -1559,7 +1574,6 @@
 
                 let customCfg = null;
 
-                // 1. Prioridad: Configuración fija definida en PLANTACONTROL_VERCEL_CONFIG (al inicio del archivo)
                 const staticVercelCfg = window.PLANTACONTROL_VERCEL_CONFIG;
                 if (staticVercelCfg) {
                     if (staticVercelCfg.plantSlug) {
@@ -1570,7 +1584,6 @@
                     }
                 }
 
-                // 2. Respaldo: Configuración guardada manualmente desde el modal en el navegador
                 try {
                     const savedCfgRaw = localStorage.getItem(CLOUD_CFG_KEY);
                     if (savedCfgRaw) {
@@ -1582,7 +1595,6 @@
                     }
                 } catch (e) { /* ignore */ }
 
-                // 3. Entorno embebido (Canvas) si no hay configuración externa de Vercel
                 let firebaseConfig = customCfg;
                 if (!firebaseConfig && typeof __firebase_config !== 'undefined' && __firebase_config) {
                     try {
@@ -1600,7 +1612,6 @@
                 }
 
                 try {
-                    // Limpiar suscripciones anteriores si reconecta
                     cloudUnsubs.forEach(unsub => { try { unsub(); } catch (e) {} });
                     cloudUnsubs = [];
 
@@ -1634,7 +1645,6 @@
                             cloudCollectionsCache[colName] = docs;
                             initialLoads++;
 
-                            // Si la nube aún está vacía tras cargar las 6 colecciones, sembramos los datos iniciales
                             if (initialLoads === collections.length) {
                                 const totalRemote = Object.values(cloudCollectionsCache).reduce((s, arr) => s + arr.length, 0);
                                 if (totalRemote === 0) {
@@ -1708,7 +1718,7 @@
 );`,
                     `CREATE TABLE IF NOT EXISTS movements (
     id VARCHAR(64) PRIMARY KEY,
-    mov_date DATE NOT NULL,
+    mov_date VARCHAR(32) NOT NULL,
     type VARCHAR(20) NOT NULL,
     product_id VARCHAR(64) NOT NULL,
     product_name VARCHAR(180) NOT NULL,
@@ -1770,10 +1780,10 @@
                         });
                         sqlDb = new sqlEngine.Database();
                         syncSqlDatabase();
-                        if ($('login-sql-status')) $('login-sql-status').innerHTML = '<i class="fa-solid fa-database"></i> SQLite WASM Activo';
+                        if ($('login-sql-status') && !cloudConnected) $('login-sql-status').innerHTML = '<i class="fa-solid fa-database"></i> SQLite WASM Activo';
                     }
                 } catch (e) {
-                    if ($('login-sql-status')) $('login-sql-status').innerHTML = '<i class="fa-solid fa-database"></i> SQL Script Listo';
+                    if ($('login-sql-status') && !cloudConnected) $('login-sql-status').innerHTML = '<i class="fa-solid fa-database"></i> SQL Script Listo';
                 }
                 checkPeriodicBackup();
             }
@@ -1795,6 +1805,7 @@
                     ``,
                     `DELETE FROM movements;`,
                     `DELETE FROM products;`,
+                    `DELETE FROM units;`,
                     `DELETE FROM categories;`,
                     `DELETE FROM clients;`,
                     `DELETE FROM users;`,
@@ -1931,7 +1942,7 @@
                         id: String(r[0]), date: String(r[1]), type: toUpperClean(r[2]), productId: String(r[3]),
                         productName: toUpperClean(r[4]), qty: Number(r[5]) || 0, unitPrice: 0, totalAmount: 0,
                         role: toUpperClean(r[6]), userName: toUpperClean(r[7]),
-                        clientId: String(r[8] || ''), clientName: toUpperClean(r[9] || ''), note: toUpperClean(r[10] || '')
+                        clientId: String(r[8] || ''), clientName: toUpperClean(r[9]), note: toUpperClean(r[10] || '')
                     };
                 }) : [];
 
@@ -1982,7 +1993,7 @@
                 if (!currentUser) return;
                 const role = currentUser.role;
                 const isGerencia = role === 'GERENCIA';
-                const isProduccion = role === 'PRODUCCION';
+                const isProduccion = isProductionRole(currentUser);
                 const isVentas = role === 'VENTAS';
 
                 const canIngreso = isGerencia || isProduccion;
@@ -2226,7 +2237,7 @@
 
             function buildProductActionButtons(p) {
                 const role = currentUser?.role;
-                const canManage = role === 'GERENCIA' || role === 'PRODUCCION';
+                const canManage = role === 'GERENCIA' || isProductionRole(currentUser);
                 const canSell = (role === 'GERENCIA' || role === 'VENTAS') && Number(p.stock) > 0;
 
                 let btns = '';
@@ -2480,6 +2491,12 @@
                         ? ` • $${Number(m.unitPrice).toFixed(2)} c/u = <span class="text-[#ffbe0b]">$${Number(m.totalAmount).toFixed(2)}</span>`
                         : '';
 
+                    const rawDateStr = String(m.date || '');
+                    const [datePart, timePart] = rawDateStr.split(' ');
+                    const formattedDateTime = timePart
+                        ? `${escapeHTML(datePart)} <span class="text-[#ffbe0b]">• ${escapeHTML(timePart)}</span>`
+                        : `${escapeHTML(datePart)} <span class="text-slate-500">• --:--</span>`;
+
                     const row = document.createElement('div');
                     row.className = 'p-3.5 rounded-2xl bg-[#050811] border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5';
                     row.innerHTML = `
@@ -2487,7 +2504,7 @@
                             <div class="flex items-center gap-2 flex-wrap">
                                 <span class="px-2 py-0.5 rounded-md text-[10px] font-black ${badgeClass}">${m.type}</span>
                                 <span class="text-xs font-black text-white">${highlightMatch(m.productName, rawQuery)}</span>
-                                <span class="text-[11px] font-bold text-slate-400"><i class="fa-regular fa-calendar mr-1"></i>${escapeHTML(m.date)}</span>
+                                <span class="text-[11px] font-bold text-slate-400"><i class="fa-regular fa-clock mr-1"></i>${formattedDateTime}</span>
                             </div>
                             <p class="text-[11px] text-slate-400">
                                 Registrado por <span class="text-slate-200 font-bold">[${escapeHTML(m.role)}] ${highlightMatch(m.userName, rawQuery)}</span>
@@ -2884,7 +2901,7 @@
             }
 
             function openCategoriesManagerModal() {
-                if (currentUser?.role !== 'GERENCIA' && currentUser?.role !== 'PRODUCCION') {
+                if (currentUser?.role !== 'GERENCIA' && !isProductionRole(currentUser)) {
                     showToast('SOLO GERENCIA O PRODUCCIÓN PUEDEN GESTIONAR CATEGORÍAS.', 'error');
                     return;
                 }
@@ -2998,7 +3015,7 @@
             }
 
             function openUnitsManagerModal() {
-                if (currentUser?.role !== 'GERENCIA' && currentUser?.role !== 'PRODUCCION') {
+                if (currentUser?.role !== 'GERENCIA' && !isProductionRole(currentUser)) {
                     showToast('SOLO GERENCIA O PRODUCCIÓN PUEDEN GESTIONAR UNIDADES.', 'error');
                     return;
                 }
@@ -3144,6 +3161,11 @@
                 if ($('prod-unit-dropdown')) $('prod-unit-dropdown').classList.add('hidden');
                 if ($('prod-unit-clear')) $('prod-unit-clear').classList.add('hidden');
 
+                const lockStock = isProductionRole(currentUser);
+                const stockInput = $('prod-stock');
+                const stockLabel = $('prod-stock-label');
+                const lockNote = $('prod-stock-lock-note');
+
                 if (prodId) {
                     const p = appState.products.find(x => x.id === prodId);
                     if (!p) return;
@@ -3155,14 +3177,32 @@
                     $('prod-name').value = p.name;
                     $('prod-unit').value = p.unit;
                     if ($('prod-unit-clear')) $('prod-unit-clear').classList.toggle('hidden', !(p.unit || '').trim());
-                    $('prod-stock').value = p.stock;
+                    stockInput.value = p.stock;
                     $('prod-min-stock').value = p.minStock;
                     $('prod-price').value = Number(p.price || 0).toFixed(2);
                 } else {
                     $('prod-modal-title').textContent = 'Registrar Nuevo Producto';
+                    stockInput.value = 0;
                     if ($('prod-unit-clear')) $('prod-unit-clear').classList.remove('hidden');
                     if (prefillName) $('prod-name').value = toUpperClean(prefillName);
                 }
+
+                // Bloqueo de edición manual de stock para Producción
+                if (stockInput) {
+                    stockInput.disabled = lockStock;
+                    stockInput.className = lockStock
+                        ? 'w-full p-3 bg-[#050811]/50 border border-slate-800 rounded-xl text-xs font-black text-slate-500 cursor-not-allowed outline-none'
+                        : 'w-full p-3 bg-[#050811] border border-slate-700 focus:border-[#00f5d4] rounded-xl text-xs font-black text-white outline-none';
+                }
+                if (stockLabel) {
+                    stockLabel.innerHTML = lockStock
+                        ? 'Stock <i class="fa-solid fa-lock text-[#ffbe0b]"></i>'
+                        : 'Stock *';
+                }
+                if (lockNote) {
+                    lockNote.classList.toggle('hidden', !lockStock);
+                }
+
                 $('modal-product').classList.remove('hidden');
             }
 
@@ -3294,11 +3334,12 @@
                     showToast(`BIENVENIDO, ${user.name} (${user.role})`, 'success');
                 });
 
-                // Submit Movimiento (Ingreso o Venta Multi-Ítem)
+                // Submit Movimiento (Ingreso o Venta Multi-Ítem con Fecha + Hora Exacta)
                 $('movement-form').addEventListener('submit', (e) => {
                     e.preventDefault();
                     const type = $('mov-type-input').value;
-                    const date = $('mov-date-input').value || getTodayISO();
+                    const pickedDate = $('mov-date-input').value || getTodayISO();
+                    const dateTimeStamp = getNowDateTimeISO(pickedDate);
                     const note = toUpperClean($('mov-note-input').value);
 
                     if (type === 'INGRESO') {
@@ -3317,7 +3358,7 @@
                         prod.stock = (Number(prod.stock) || 0) + qty;
                         appState.movements.unshift({
                             id: `mov-${Date.now()}`,
-                            date,
+                            date: dateTimeStamp,
                             type: 'INGRESO',
                             productId: prod.id,
                             productName: prod.name,
@@ -3334,7 +3375,7 @@
                         saveState();
                         $('modal-movement').classList.add('hidden');
                         refreshAllViews();
-                        showToast(`INGRESO REGISTRADO: +${qty} ${prod.unit} DE ${prod.sku}.`, 'success');
+                        showToast(`INGRESO REGISTRADO (${dateTimeStamp}): +${qty} ${prod.unit} DE ${prod.sku}.`, 'success');
                         return;
                     }
 
@@ -3384,7 +3425,7 @@
 
                         appState.movements.unshift({
                             id: `mov-${Date.now()}-${index}`,
-                            date,
+                            date: dateTimeStamp,
                             type: 'VENTA',
                             productId: prod.id,
                             productName: prod.name,
@@ -3479,7 +3520,7 @@
                     refreshAllViews();
                 });
 
-                // CRUD Producto
+                // CRUD Producto (con bloqueo de stock para Producción)
                 $('product-form').addEventListener('submit', (e) => {
                     e.preventDefault();
                     const id = $('prod-id').value;
@@ -3487,10 +3528,11 @@
                     const name = toUpperClean($('prod-name').value);
                     const category = toUpperClean($('prod-category').value) || 'GENERAL';
                     const unit = toUpperClean($('prod-unit').value) || 'UND';
-                    const stock = Math.max(0, parseInt($('prod-stock').value, 10) || 0);
+                    const requestedStock = Math.max(0, parseInt($('prod-stock').value, 10) || 0);
                     const minStock = Math.max(0, parseInt($('prod-min-stock').value, 10) || 0);
                     const price = Math.max(0, parseFloat($('prod-price').value) || 0);
                     const returnToMov = $('prod-return-to-mov').value === '1';
+                    const lockStock = isProductionRole(currentUser);
 
                     const dupSku = appState.products.find(p => p.sku === sku && p.id !== id);
                     if (dupSku) {
@@ -3515,14 +3557,17 @@
                             prod.name = name;
                             prod.category = category;
                             prod.unit = unit;
-                            prod.stock = stock;
+                            if (!lockStock) {
+                                prod.stock = requestedStock;
+                            }
                             prod.minStock = minStock;
                             prod.price = price;
                         }
                         showToast(`PRODUCTO ${sku} ACTUALIZADO.`, 'success');
                     } else {
                         savedId = `prod-${Date.now()}`;
-                        appState.products.unshift({ id: savedId, sku, name, category, unit, stock, minStock, price });
+                        const initialStock = lockStock ? 0 : requestedStock;
+                        appState.products.unshift({ id: savedId, sku, name, category, unit, stock: initialStock, minStock, price });
                         showToast(`PRODUCTO ${sku} CREADO.`, 'success');
                     }
 
@@ -3732,44 +3777,46 @@
                     } else if (action === 'delete-unit') {
                         const un = (appState.units || []).find(u => u.id === id);
                         if (!un) return;
-                        const linked = appState.products.filter(p => toUpperClean(p.unit) === un.code).length;
-                        const warn = linked > 0 ? ` Tiene ${linked} producto(s) asociado(s) que pasarán a "UND".` : '';
-                        openConfirmModal('Eliminar Unidad', `¿Desea eliminar la unidad "${un.code} - ${un.name}"?${warn}`, () => {
-                            appState.units = (appState.units || []).filter(u => u.id !== id);
-                            if (linked > 0) {
-                                appState.products.forEach(p => {
-                                    if (toUpperClean(p.unit) === un.code) p.unit = 'UND';
-                                });
+                        const count = appState.products.filter(p => toUpperClean(p.unit) === un.code).length;
+                        openConfirmModal(
+                            'Eliminar Unidad de Medida',
+                            count > 0
+                                ? `¿Eliminar la unidad "${un.code}"? Hay ${count} producto(s) usando esta unidad (conservarán el texto "${un.code}").`
+                                : `¿Eliminar permanentemente la unidad "${un.code}"?`,
+                            () => {
+                                appState.units = (appState.units || []).filter(u => u.id !== id);
+                                saveState();
+                                renderUnitsList();
+                                refreshAllViews();
+                                showToast(`UNIDAD "${un.code}" ELIMINADA.`, 'info');
                             }
-                            saveState();
-                            renderUnitsList();
-                            refreshAllViews();
-                            showToast(`UNIDAD "${un.code}" ELIMINADA.`, 'info');
-                        });
+                        );
                     } else if (action === 'clear-unit-search') {
-                        $('unit-search-input').value = '';
+                        if ($('unit-search-input')) $('unit-search-input').value = '';
                         renderUnitsList();
                     } else if (action === 'select-prod-unit') {
-                        const unitCode = toUpperClean(btn.getAttribute('data-code'));
-                        $('prod-unit').value = unitCode;
-                        if ($('prod-unit-clear')) $('prod-unit-clear').classList.remove('hidden');
+                        const unitCode = btn.getAttribute('data-code') || '';
+                        if ($('prod-unit')) $('prod-unit').value = unitCode;
+                        if ($('prod-unit-clear')) $('prod-unit-clear').classList.toggle('hidden', !unitCode);
                         if ($('prod-unit-dropdown')) $('prod-unit-dropdown').classList.add('hidden');
                     } else if (action === 'clear-prod-unit') {
-                        $('prod-unit').value = '';
+                        if ($('prod-unit')) {
+                            $('prod-unit').value = '';
+                            $('prod-unit').focus();
+                        }
                         if ($('prod-unit-clear')) $('prod-unit-clear').classList.add('hidden');
                         handleProdUnitSearch();
                     } else if (action === 'quick-create-unit') {
-                        const newUnitCode = toUpperClean($('prod-unit').value);
-                        if (newUnitCode) {
-                            if (!Array.isArray(appState.units)) appState.units = [];
-                            if (!appState.units.some(u => u.code === newUnitCode)) {
-                                appState.units.unshift({ id: `unit-${Date.now()}`, code: newUnitCode, name: `UNIDAD ${newUnitCode}` });
-                                saveState();
-                                refreshAllViews();
-                                showToast(`UNIDAD "${newUnitCode}" CREADA.`, 'success');
-                            }
-                            if ($('prod-unit-dropdown')) $('prod-unit-dropdown').classList.add('hidden');
+                        const unitCode = toUpperClean($('prod-unit') ? $('prod-unit').value : '');
+                        if (!unitCode) return;
+                        if (!Array.isArray(appState.units)) appState.units = [];
+                        if (!appState.units.some(u => u.code === unitCode)) {
+                            appState.units.unshift({ id: `unit-${Date.now()}`, code: unitCode, name: `UNIDAD ${unitCode}` });
+                            saveState();
+                            refreshAllViews();
+                            showToast(`UNIDAD "${unitCode}" AGREGADA.`, 'success');
                         }
+                        if ($('prod-unit-dropdown')) $('prod-unit-dropdown').classList.add('hidden');
                     } else if (action === 'edit-category') {
                         const cat = (appState.categories || []).find(c => c.id === id);
                         if (!cat) return;
@@ -3785,55 +3832,64 @@
                     } else if (action === 'delete-category') {
                         const cat = (appState.categories || []).find(c => c.id === id);
                         if (!cat) return;
-                        const linked = appState.products.filter(p => toUpperClean(p.category) === cat.name).length;
-                        const warn = linked > 0 ? ` Tiene ${linked} producto(s) asociado(s) que pasarán a "GENERAL".` : '';
-                        openConfirmModal('Eliminar Categoría', `¿Desea eliminar la categoría "${cat.name}"?${warn}`, () => {
-                            appState.categories = (appState.categories || []).filter(c => c.id !== id);
-                            if (linked > 0) {
+                        const count = appState.products.filter(p => toUpperClean(p.category) === cat.name).length;
+                        openConfirmModal(
+                            'Eliminar Categoría',
+                            count > 0
+                                ? `¿Eliminar la categoría "${cat.name}"? Hay ${count} producto(s) asociados que pasarán a categoría "GENERAL".`
+                                : `¿Eliminar permanentemente la categoría "${cat.name}"?`,
+                            () => {
+                                appState.categories = (appState.categories || []).filter(c => c.id !== id);
                                 appState.products.forEach(p => {
                                     if (toUpperClean(p.category) === cat.name) p.category = 'GENERAL';
                                 });
+                                saveState();
+                                renderCategoriesList();
+                                refreshAllViews();
+                                showToast(`CATEGORÍA "${cat.name}" ELIMINADA.`, 'info');
                             }
-                            saveState();
-                            renderCategoriesList();
-                            refreshAllViews();
-                            showToast(`CATEGORÍA "${cat.name}" ELIMINADA.`, 'info');
-                        });
+                        );
                     } else if (action === 'clear-cat-search') {
-                        $('cat-search-input').value = '';
+                        if ($('cat-search-input')) $('cat-search-input').value = '';
                         renderCategoriesList();
                     } else if (action === 'select-prod-category') {
-                        const catName = toUpperClean(btn.getAttribute('data-name'));
-                        $('prod-category').value = catName;
-                        if ($('prod-category-clear')) $('prod-category-clear').classList.remove('hidden');
+                        const catName = btn.getAttribute('data-name') || '';
+                        if ($('prod-category')) $('prod-category').value = catName;
+                        if ($('prod-category-clear')) $('prod-category-clear').classList.toggle('hidden', !catName);
                         if ($('prod-category-dropdown')) $('prod-category-dropdown').classList.add('hidden');
                     } else if (action === 'clear-prod-category') {
-                        $('prod-category').value = '';
+                        if ($('prod-category')) {
+                            $('prod-category').value = '';
+                            $('prod-category').focus();
+                        }
                         if ($('prod-category-clear')) $('prod-category-clear').classList.add('hidden');
                         handleProdCategorySearch();
                     } else if (action === 'quick-create-category') {
-                        const newCatName = toUpperClean($('prod-category').value);
-                        if (newCatName) {
-                            if (!Array.isArray(appState.categories)) appState.categories = [];
-                            if (!appState.categories.some(c => c.name === newCatName)) {
-                                appState.categories.unshift({ id: `cat-${Date.now()}`, name: newCatName, description: '' });
-                                saveState();
-                                refreshAllViews();
-                                showToast(`CATEGORÍA "${newCatName}" CREADA.`, 'success');
-                            }
-                            if ($('prod-category-dropdown')) $('prod-category-dropdown').classList.add('hidden');
+                        const catName = toUpperClean($('prod-category') ? $('prod-category').value : '');
+                        if (!catName) return;
+                        if (!Array.isArray(appState.categories)) appState.categories = [];
+                        if (!appState.categories.some(c => c.name === catName)) {
+                            appState.categories.unshift({ id: `cat-${Date.now()}`, name: catName, description: '' });
+                            saveState();
+                            refreshAllViews();
+                            showToast(`CATEGORÍA "${catName}" AGREGADA.`, 'success');
                         }
+                        if ($('prod-category-dropdown')) $('prod-category-dropdown').classList.add('hidden');
                     } else if (action === 'edit-product') {
                         openProductModal(id);
                     } else if (action === 'delete-product') {
                         const p = appState.products.find(x => x.id === id);
                         if (!p) return;
-                        openConfirmModal('Eliminar Producto', `¿Desea eliminar "${p.sku} - ${p.name}" del catálogo?`, () => {
-                            appState.products = appState.products.filter(x => x.id !== id);
-                            saveState();
-                            refreshAllViews();
-                            showToast(`PRODUCTO ${p.sku} ELIMINADO.`, 'info');
-                        });
+                        openConfirmModal(
+                            'Eliminar Producto',
+                            `¿Desea eliminar permanentemente "${p.sku} - ${p.name}" del catálogo?`,
+                            () => {
+                                appState.products = appState.products.filter(x => x.id !== id);
+                                saveState();
+                                refreshAllViews();
+                                showToast(`PRODUCTO ${p.sku} ELIMINADO.`, 'info');
+                            }
+                        );
                     } else if (action === 'open-client-modal') {
                         openClientModal();
                     } else if (action === 'edit-client') {
@@ -3841,12 +3897,40 @@
                     } else if (action === 'delete-client') {
                         const c = appState.clients.find(x => x.id === id);
                         if (!c) return;
-                        openConfirmModal('Eliminar Cliente', `¿Desea eliminar el cliente "${c.name}"?`, () => {
-                            appState.clients = appState.clients.filter(x => x.id !== id);
+                        openConfirmModal(
+                            'Eliminar Cliente',
+                            `¿Desea eliminar al cliente "${c.name}" del directorio?`,
+                            () => {
+                                appState.clients = appState.clients.filter(x => x.id !== id);
+                                saveState();
+                                refreshAllViews();
+                                showToast(`CLIENTE ${c.name} ELIMINADO.`, 'info');
+                            }
+                        );
+                    } else if (action === 'save-user-pin') {
+                        const inp = document.querySelector(`[data-pin-user="${id}"]`);
+                        const newPin = toUpperClean(inp?.value);
+                        const u = appState.users.find(x => x.id === id);
+                        if (u && newPin) {
+                            u.pin = newPin;
                             saveState();
-                            refreshAllViews();
-                            showToast(`CLIENTE ${c.name} ELIMINADO.`, 'info');
-                        });
+                            populateLoginUsers();
+                            showToast(`CLAVE ACTUALIZADA PARA ${u.name}.`, 'success');
+                        }
+                    } else if (action === 'delete-user') {
+                        const u = appState.users.find(x => x.id === id);
+                        if (!u) return;
+                        openConfirmModal(
+                            'Eliminar Vendedor',
+                            `¿Eliminar el acceso del vendedor "${u.name}"?`,
+                            () => {
+                                appState.users = appState.users.filter(x => x.id !== id);
+                                saveState();
+                                populateLoginUsers();
+                                renderAdminUsers();
+                                showToast(`VENDEDOR ${u.name} ELIMINADO.`, 'info');
+                            }
+                        );
                     } else if (action === 'dash-filter') {
                         dashFilter = btn.getAttribute('data-filter');
                         document.querySelectorAll('.dash-filter-btn').forEach(b => {
@@ -3886,103 +3970,79 @@
                     } else if (action === 'clear-history-search') {
                         $('history-search-input').value = '';
                         renderHistory();
-                    } else if (action === 'save-user-pin') {
-                        const input = document.querySelector(`[data-pin-user="${id}"]`);
-                        const user = appState.users.find(u => u.id === id);
-                        if (input && user && toUpperClean(input.value)) {
-                            user.pin = toUpperClean(input.value);
-                            saveState();
-                            populateLoginUsers();
-                            showToast(`CLAVE ACTUALIZADA PARA ${user.name}.`, 'success');
-                        }
-                    } else if (action === 'delete-user') {
-                        const user = appState.users.find(u => u.id === id);
-                        if (!user) return;
-                        openConfirmModal('Eliminar Vendedor', `¿Eliminar al vendedor "${user.name}"?`, () => {
-                            appState.users = appState.users.filter(u => u.id !== id);
-                            saveState();
-                            populateLoginUsers();
-                            renderAdminUsers();
-                            showToast(`VENDEDOR ${user.name} ELIMINADO.`, 'info');
-                        });
                     } else if (action === 'export-csv') {
-                        const headers = ['ID', 'FECHA', 'TIPO', 'PRODUCTO', 'CANTIDAD', 'PRECIO_UNIT', 'TOTAL', 'ROL', 'USUARIO', 'CLIENTE', 'NOTA'];
+                        const headers = ['ID', 'FECHA_HORA', 'TIPO', 'PRODUCTO', 'CANTIDAD', 'PRECIO_UNIT', 'TOTAL', 'ROL', 'RESPONSABLE', 'CLIENTE', 'NOTA'];
                         const rows = appState.movements.map(m => [
-                            m.id, m.date, m.type, `"${(m.productName || '').replace(/"/g, '""')}"`, m.qty,
-                            Number(m.unitPrice || 0).toFixed(2), Number(m.totalAmount || 0).toFixed(2),
-                            m.role, `"${(m.userName || '').replace(/"/g, '""')}"`, `"${(m.clientName || '').replace(/"/g, '""')}"`,
-                            `"${(m.note || '').replace(/"/g, '""')}"`
-                        ].join(','));
+                            m.id, m.date, m.type, m.productName, m.qty, m.unitPrice || 0, m.totalAmount || 0, m.role, m.userName, m.clientName || '', m.note || ''
+                        ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(','));
                         const csv = [headers.join(','), ...rows].join('\n');
-                        triggerDownload(new Blob([csv], { type: 'text/csv;charset=utf-8;' }), `plantacontrol_movimientos_${getTodayISO()}.csv`);
-                        showToast('ARCHIVO CSV DESCARGADO.', 'success');
+                        triggerDownload(new Blob([csv], { type: 'text/csv;charset=utf-8;' }), `historial_planta_${getTodayISO()}.csv`);
+                        showToast('HISTORIAL EXPORTADO A CSV.', 'success');
                     } else if (action === 'download-sql-dump') {
-                        const sql = buildFullSqlDump();
-                        triggerDownload(new Blob([sql], { type: 'application/sql;charset=utf-8;' }), `plantacontrol_backup_${getTodayISO()}.sql`);
-                        recordBackupTimestamp('DESCARGA .SQL');
-                        showToast('RESPALDO .SQL DESCARGADO.', 'success');
+                        const dump = buildFullSqlDump();
+                        triggerDownload(new Blob([dump], { type: 'application/sql;charset=utf-8;' }), `plantacontrol_backup_${getTodayISO()}.sql`);
+                        recordBackupTimestamp('SQL-DUMP');
+                        showToast('ARCHIVO .SQL GENERADO Y DESCARGADO.', 'success');
                     } else if (action === 'download-sqlite-bin') {
                         if (!sqlDb) {
-                            showToast('MOTOR BINARIO SQLITE NO DISPONIBLE EN ESTE NAVEGADOR.', 'error');
+                            showToast('MOTOR SQLITE NO DISPONIBLE EN ESTE NAVEGADOR.', 'error');
                             return;
                         }
-                        syncSqlDatabase();
                         const bin = sqlDb.export();
                         triggerDownload(new Blob([bin], { type: 'application/x-sqlite3' }), `plantacontrol_db_${getTodayISO()}.sqlite`);
-                        recordBackupTimestamp('DESCARGA .SQLITE');
+                        recordBackupTimestamp('SQLITE-BIN');
                         showToast('BASE DE DATOS .SQLITE DESCARGADA.', 'success');
                     } else if (action === 'create-snapshot') {
                         createLocalSnapshot('MANUAL');
-                        showToast('SNAPSHOT LOCAL GUARDADO.', 'success');
-                    } else if (action === 'open-cloud-config') {
+                        showToast('SNAPSHOT LOCAL GUARDADO EN EL NAVEGADOR.', 'success');
+                    } else if (action === 'download-snapshot') {
+                        const snaps = JSON.parse(localStorage.getItem(SNAPSHOTS_KEY) || '[]');
+                        const snap = snaps.find(s => s.id === id);
+                        if (snap) {
+                            triggerDownload(new Blob([snap.sql], { type: 'application/sql;charset=utf-8;' }), `snapshot_${snap.id}.sql`);
+                        }
+                    } else if (action === 'run-sql-query') {
+                        const out = $('sql-console-output');
+                        const sql = $('sql-console-input').value.trim();
+                        if (!sqlDb) {
+                            out.textContent = 'Motor SQLite WASM cargando...';
+                            return;
+                        }
                         try {
-                            const savedCfg = JSON.parse(localStorage.getItem(CLOUD_CFG_KEY) || '{}');
-                            if ($('cloud-plant-code')) $('cloud-plant-code').value = savedCfg.plantSlug || cloudPlantSlug;
-                            if ($('cloud-json-input') && savedCfg.firebaseConfig) {
-                                $('cloud-json-input').value = JSON.stringify(savedCfg.firebaseConfig, null, 2);
+                            const res = sqlDb.exec(sql);
+                            if (!res || res.length === 0) {
+                                out.textContent = 'Consulta ejecutada sin filas devueltas.';
+                                return;
+                            }
+                            const cols = res[0].columns;
+                            const vals = res[0].values;
+                            out.textContent = [cols.join(' | '), '-'.repeat(40), ...vals.map(r => r.join(' | '))].join('\n');
+                        } catch (err) {
+                            out.textContent = `Error SQL: ${err.message}`;
+                        }
+                    } else if (action === 'open-cloud-config') {
+                        if ($('cloud-plant-code')) $('cloud-plant-code').value = cloudPlantSlug;
+                        try {
+                            const saved = JSON.parse(localStorage.getItem(CLOUD_CFG_KEY) || '{}');
+                            if (saved.firebaseConfig && $('cloud-json-input')) {
+                                $('cloud-json-input').value = JSON.stringify(saved.firebaseConfig, null, 2);
                             }
                         } catch (e) { /* ignore */ }
                         $('modal-cloud-config').classList.remove('hidden');
                     } else if (action === 'force-push-cloud') {
                         pushAllStateToCloud().then(() => {
-                            showToast('DATOS SINCRONIZADOS CON LA NUBE.', 'success');
+                            showToast('DATOS SINCRONIZADOS HACIA LA NUBE.', 'success');
                         });
-                    } else if (action === 'download-snapshot') {
-                        const snaps = JSON.parse(localStorage.getItem(SNAPSHOTS_KEY) || '[]');
-                        const snap = snaps.find(s => s.id === id);
-                        if (snap) {
-                            triggerDownload(new Blob([snap.sql], { type: 'application/sql;charset=utf-8;' }), `plantacontrol_${snap.id}.sql`);
-                        }
-                    } else if (action === 'run-sql-query') {
-                        const query = $('sql-console-input').value.trim();
-                        const out = $('sql-console-output');
-                        if (!sqlDb) {
-                            out.textContent = 'Motor SQLite aún inicializando...';
-                            return;
-                        }
-                        try {
-                            syncSqlDatabase();
-                            const res = sqlDb.exec(query);
-                            if (!res.length) {
-                                out.textContent = 'Consulta ejecutada sin filas de retorno.';
-                            } else {
-                                const cols = res[0].columns.join(' | ');
-                                const rows = res[0].values.map(r => r.join(' | ')).join('\n');
-                                out.textContent = `${cols}\n${'-'.repeat(cols.length)}\n${rows}`;
-                            }
-                        } catch (err) {
-                            out.textContent = `Error SQL: ${err.message}`;
-                        }
                     }
                 });
 
+                // Formulario configuración de nube para Vercel
                 if ($('cloud-config-form')) {
-                    $('cloud-config-form').addEventListener('submit', async (e) => {
+                    $('cloud-config-form').addEventListener('submit', (e) => {
                         e.preventDefault();
-                        const plantSlug = toUpperClean($('cloud-plant-code').value) || 'PLANTA-PRINCIPAL';
+                        const plantCode = toUpperClean($('cloud-plant-code').value) || 'PLANTA-PRINCIPAL';
                         const rawJson = $('cloud-json-input').value.trim();
                         let parsedFb = null;
-
                         if (rawJson) {
                             try {
                                 parsedFb = JSON.parse(rawJson);
@@ -3991,29 +4051,42 @@
                                 return;
                             }
                         }
-
                         localStorage.setItem(CLOUD_CFG_KEY, JSON.stringify({
-                            plantSlug,
+                            plantSlug: plantCode,
                             firebaseConfig: parsedFb
                         }));
-                        cloudPlantSlug = plantSlug;
                         $('modal-cloud-config').classList.add('hidden');
-                        await initCloudRealtimeSync();
-                        showToast(`CONECTADO A PLANTA: ${plantSlug}`, 'success');
+                        initCloudRealtimeSync();
+                        showToast('CONFIGURACIÓN DE NUBE GUARDADA Y CONECTANDO...', 'success');
                     });
                 }
+
+                // Cerrar dropdowns al hacer clic fuera
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('#mov-client-section')) {
+                        if ($('mov-client-dropdown')) $('mov-client-dropdown').classList.add('hidden');
+                    }
+                    if (!e.target.closest('#mov-product-search') && !e.target.closest('#mov-product-dropdown')) {
+                        if ($('mov-product-dropdown')) $('mov-product-dropdown').classList.add('hidden');
+                    }
+                    if (!e.target.closest('#prod-category') && !e.target.closest('#prod-category-dropdown')) {
+                        if ($('prod-category-dropdown')) $('prod-category-dropdown').classList.add('hidden');
+                    }
+                    if (!e.target.closest('#prod-unit') && !e.target.closest('#prod-unit-dropdown')) {
+                        if ($('prod-unit-dropdown')) $('prod-unit-dropdown').classList.add('hidden');
+                    }
+                });
             }
 
-            window.addEventListener('cloud-sdk-ready', () => {
+            // Arranque inicial
+            populateLoginUsers();
+            bindGlobalEvents();
+            initSqlEngine();
+            if (window.__CLOUD_SDK__) {
                 initCloudRealtimeSync();
-            });
-
-            window.addEventListener('DOMContentLoaded', () => {
-                populateLoginUsers();
-                bindGlobalEvents();
-                initSqlEngine();
-                if (window.__CLOUD_SDK__) initCloudRealtimeSync();
-            });
+            } else {
+                window.addEventListener('cloud-sdk-ready', initCloudRealtimeSync);
+            }
         })();
     </script>
 </body>
